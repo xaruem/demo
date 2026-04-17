@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Маннапов Улугбек — Frontend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================
+   RESET & BASE
+========================================= */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'Inter',sans-serif;
+  background:#080b14;
+  color:#e2e8f0;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* =========================================
+   CSS VARIABLES
+========================================= */
+:root{
+  --neon:#00f5ff;
+  --neon2:#7c3aed;
+  --neon3:#f0abfc;
+  --bg:#080b14;
+  --bg2:#0d1117;
+  --bg3:#111827;
+  --card:#0f1923;
+  --border:rgba(0,245,255,0.15);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --font-mono:'JetBrains Mono',monospace;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--neon);border-radius:2px}
+
+/* =========================================
+   NAVBAR
+========================================= */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:0 24px;height:64px;
+  display:flex;align-items:center;
+  background:rgba(8,11,20,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:all 0.3s;
+}
+.navbar.scrolled{
+  background:rgba(8,11,20,0.97);
+  box-shadow:0 0 30px rgba(0,245,255,0.08);
+}
+.nav-inner{
+  width:100%;max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-family:var(--font-mono);
+  font-size:20px;font-weight:700;
+  color:var(--neon);
+  letter-spacing:2px;
+  text-shadow:0 0 20px var(--neon);
+}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  color:var(--muted);font-size:14px;font-weight:500;
+  text-decoration:none;letter-spacing:0.5px;
+  transition:color 0.2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;
+  background:var(--neon);transition:width 0.3s;
+}
+.nav-links a:hover{color:var(--neon)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  padding:8px 20px;border:1px solid var(--neon);
+  color:var(--neon);font-size:13px;font-weight:600;
+  text-decoration:none;border-radius:6px;letter-spacing:0.5px;
+  transition:all 0.2s;font-family:var(--font-mono);
+}
+.nav-cta:hover{background:var(--neon);color:#000}
+
+/* Hamburger */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;cursor:pointer;
+  padding:4px;background:none;border:none;
+}
+.hamburger span{
+  display:block;width:24px;height:2px;
+  background:var(--neon);border-radius:2px;
+  transition:all 0.3s;
+}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* Mobile menu */
+.mobile-menu{
+  display:none;
+  position:fixed;top:64px;left:0;right:0;
+  background:rgba(8,11,20,0.98);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:24px;z-index:999;
+  flex-direction:column;gap:20px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  color:var(--muted);font-size:16px;font-weight:500;
+  text-decoration:none;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  transition:color 0.2s;
+}
+.mobile-menu a:hover{color:var(--neon)}
+
+/* =========================================
+   HERO
+========================================= */
+.hero{
+  min-height:100vh;padding:80px 24px 40px;
+  display:flex;align-items:center;
+  position:relative;overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.grid-lines{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,245,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.orb{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;
+  animation:orbFloat 8s ease-in-out infinite alternate;
+}
+.orb1{width:600px;height:600px;background:var(--neon2);top:-200px;right:-200px}
+.orb2{width:400px;height:400px;background:var(--neon);bottom:-100px;left:-100px;animation-delay:2s}
+@keyframes orbFloat{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.05)}}
+
+/* PARTICLES CANVAS */
+#particleCanvas{position:absolute;inset:0;z-index:1}
+
+.hero-inner{
+  max-width:1200px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;
+  align-items:center;position:relative;z-index:2;
+}
+
+/* Photo side */
+.hero-photo-side{display:flex;justify-content:center}
+.photo-ring{
+  position:relative;width:320px;height:320px;
+}
+.photo-ring::before{
+  content:'';position:absolute;inset:-3px;
+  border-radius:50%;
+  background:conic-gradient(var(--neon),var(--neon2),var(--neon3),var(--neon));
+  animation:spin 4s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.photo-ring::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:var(--bg);
+}
+.photo-img{
+  position:absolute;inset:6px;border-radius:50%;
+  object-fit:cover;width:calc(100% - 12px);height:calc(100% - 12px);
+  z-index:1;
+}
+.photo-placeholder{
+  position:absolute;inset:6px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bg3),var(--card));
+  z-index:1;display:flex;align-items:center;justify-content:center;
+  font-size:80px;
+}
+.photo-badge{
+  position:absolute;bottom:10px;right:10px;z-index:2;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:8px 14px;
+  font-family:var(--font-mono);font-size:12px;color:var(--neon);
+  white-space:nowrap;
+}
+
+/* Text side */
+.hero-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;color:var(--neon);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;
+}
+.hero-label::before{
+  content:'';width:30px;height:1px;background:var(--neon);
+  box-shadow:0 0 8px var(--neon);
+}
+.hero-name{
+  font-size:clamp(36px,5vw,60px);font-weight:900;
+  line-height:1.1;margin-bottom:8px;
+}
+.hero-name .first{color:var(--text)}
+.hero-name .last{
+  color:var(--neon);
+  text-shadow:0 0 40px rgba(0,245,255,0.4);
+}
+
+/* Typing text */
+.typing-wrapper{
+  font-size:clamp(16px,2vw,22px);font-weight:600;
+  margin-bottom:20px;display:flex;align-items:center;gap:0;
+  color:var(--muted);
+}
+.typing-prefix{color:var(--neon2);font-family:var(--font-mono);margin-right:8px}
+#typingText{color:var(--text)}
+.cursor{
+  display:inline-block;width:2px;height:1.2em;
+  background:var(--neon);margin-left:2px;
+  animation:blink 0.7s step-end infinite;
+  vertical-align:middle;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.hero-bio{
+  font-size:15px;color:var(--muted);line-height:1.7;
+  margin-bottom:32px;max-width:480px;
+}
+
+.hero-stats{
+  display:flex;gap:32px;margin-bottom:36px;
+}
+.stat-item .num{
+  font-size:32px;font-weight:900;color:var(--neon);
+  font-family:var(--font-mono);line-height:1;
+  text-shadow:0 0 20px rgba(0,245,255,0.4);
+}
+.stat-item .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-neon{
+  padding:12px 28px;background:var(--neon);color:#000;
+  font-weight:700;font-size:14px;border-radius:8px;
+  text-decoration:none;letter-spacing:0.5px;
+  transition:all 0.2s;box-shadow:0 0 20px rgba(0,245,255,0.3);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-neon:hover{box-shadow:0 0 40px rgba(0,245,255,0.6);transform:translateY(-2px)}
+.btn-ghost{
+  padding:12px 28px;border:1px solid var(--border);color:var(--text);
+  font-weight:600;font-size:14px;border-radius:8px;
+  text-decoration:none;letter-spacing:0.5px;
+  transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-ghost:hover{border-color:var(--neon);color:var(--neon)}
+
+/* =========================================
+   MARQUEE
+========================================= */
+.marquee-section{
+  overflow:hidden;padding:20px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:rgba(0,245,255,0.02);
+}
+.marquee-track{
+  display:flex;gap:0;width:max-content;
+}
+.marquee-track.left{animation:marqueeLeft 30s linear infinite}
+.marquee-track.right{animation:marqueeRight 30s linear infinite}
+@keyframes marqueeLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marqueeRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.marquee-track:hover{animation-play-state:paused}
+.marquee-item{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:0 24px;white-space:nowrap;
+  font-family:var(--font-mono);font-size:13px;font-weight:500;
+  color:var(--muted);transition:color 0.2s;
+}
+.marquee-item:hover{color:var(--neon)}
+.marquee-dot{color:var(--neon);font-size:16px}
+
+.marquee-row2{margin-top:8px}
+.marquee-row2 .marquee-item{
+  font-size:12px;color:rgba(124,58,237,0.7);
+}
+.marquee-row2 .marquee-item:hover{color:var(--neon2)}
+.marquee-row2 .marquee-dot{color:var(--neon2)}
+
+/* =========================================
+   SECTION BASE
+========================================= */
+section{padding:100px 24px}
+.container{max-width:1200px;margin:0 auto}
+.section-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--neon);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:12px;
+}
+.section-label::before{content:'//';margin-right:4px}
+.section-title{
+  font-size:clamp(28px,4vw,48px);font-weight:900;
+  color:var(--text);line-height:1.1;margin-bottom:16px;
+}
+.section-sub{font-size:16px;color:var(--muted);max-width:500px}
+
+/* Scroll reveal */
+.reveal{
+  opacity:0;transform:translateX(-40px);
+  transition:all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible{opacity:1;transform:translateX(0)}
+
+/* =========================================
+   3D CUBE
+========================================= */
+.cube-section{
+  padding:80px 24px;
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--bg2);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.cube-label{
+  font-family:var(--font-mono);font-size:11px;color:var(--neon);
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:40px;
+}
+.cube-scene{
+  width:160px;height:160px;perspective:600px;
+  margin:0 auto;
+}
+.cube{
+  width:160px;height:160px;
+  position:relative;transform-style:preserve-3d;
+  animation:rotateCube 10s linear infinite;
+}
+@keyframes rotateCube{
+  0%{transform:rotateX(0) rotateY(0)}
+  100%{transform:rotateX(360deg) rotateY(360deg)}
+}
+.cube-face{
+  position:absolute;width:160px;height:160px;
+  border:1px solid rgba(0,245,255,0.3);
+  background:rgba(0,245,255,0.04);
+  backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:15px;font-weight:700;
+  color:var(--neon);letter-spacing:1px;
+  text-shadow:0 0 15px var(--neon);
+}
+.face-front {transform:translateZ(80px)}
+.face-back  {transform:rotateY(180deg) translateZ(80px)}
+.face-left  {transform:rotateY(-90deg) translateZ(80px)}
+.face-right {transform:rotateY(90deg) translateZ(80px)}
+.face-top   {transform:rotateX(90deg) translateZ(80px);font-size:12px}
+.face-bottom{transform:rotateX(-90deg) translateZ(80px);font-size:12px}
+
+/* =========================================
+   ABOUT
+========================================= */
+.about-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;margin-top:60px;
+}
+.about-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:28px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+}
+.about-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--neon),var(--neon2));
+  transform:scaleX(0);transform-origin:left;transition:transform 0.3s;
+}
+.about-card:hover::before{transform:scaleX(1)}
+.about-card:hover{border-color:rgba(0,245,255,0.3);transform:translateY(-4px)}
+.card-emoji{font-size:28px;margin-bottom:14px}
+.about-card h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:10px}
+.about-card p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* Timeline */
+.timeline{margin-top:60px;position:relative;padding-left:40px}
+.timeline::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:1px;background:linear-gradient(to bottom,var(--neon),var(--neon2),transparent);
+}
+.tl-item{position:relative;margin-bottom:36px}
+.tl-item::before{
+  content:'';position:absolute;left:-45px;top:6px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--neon);box-shadow:0 0 12px var(--neon);
+}
+.tl-year{
+  font-family:var(--font-mono);font-size:12px;color:var(--neon);
+  letter-spacing:1px;margin-bottom:4px;
+}
+.tl-item h4{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.tl-item p{font-size:14px;color:var(--muted)}
+
+/* =========================================
+   PROJECTS
+========================================= */
+.projects-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:24px;margin-top:60px;
+}
+.project-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:28px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:16px;
+}
+.project-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top right,rgba(0,245,255,0.04),transparent 60%);
+  pointer-events:none;
+}
+.project-card:hover{
+  border-color:rgba(0,245,255,0.35);
+  transform:translateY(-6px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.proj-icon{font-size:32px}
+.proj-title{font-size:17px;font-weight:800;color:var(--text)}
+.proj-desc{font-size:14px;color:var(--muted);line-height:1.6}
+.proj-tech{display:flex;flex-wrap:wrap;gap:8px}
+.tech-tag{
+  padding:4px 12px;background:rgba(0,245,255,0.08);
+  border:1px solid rgba(0,245,255,0.2);border-radius:100px;
+  font-size:12px;font-family:var(--font-mono);color:var(--neon);
+}
+.proj-features{list-style:none;display:flex;flex-direction:column;gap:6px}
+.proj-features li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+.proj-features li::before{content:'▸';color:var(--neon);flex-shrink:0}
+.proj-result{
+  background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.1);
+  border-radius:10px;padding:16px;margin-top:auto;
+}
+.proj-result h4{font-size:12px;font-family:var(--font-mono);color:var(--neon);letter-spacing:1px;margin-bottom:8px}
+.proj-result p{font-size:13px;color:var(--muted);margin-bottom:4px}
+.proj-quote{
+  font-size:12px;color:rgba(148,163,184,0.7);
+  font-style:italic;margin-top:8px;padding-top:8px;
+  border-top:1px solid var(--border);
+}
+
+/* =========================================
+   SKILLS — 3D FLIP WORDS
+========================================= */
+.skills-section{background:var(--bg2);border-top:1px solid var(--border)}
+
+/* Flip word animation */
+.flip-wrapper{
+  display:flex;align-items:center;gap:16px;
+  font-size:clamp(20px,3vw,36px);font-weight:900;
+  margin-bottom:48px;
+}
+.flip-prefix{color:var(--muted)}
+.flip-box{
+  position:relative;height:1.3em;overflow:hidden;
+  display:inline-block;min-width:220px;
+}
+.flip-word{
+  position:absolute;width:100%;
+  font-family:var(--font-mono);color:var(--neon);
+  text-shadow:0 0 20px rgba(0,245,255,0.4);
+  transition:transform 0.5s cubic-bezier(0.68,-0.55,0.27,1.55),opacity 0.5s;
+  transform-origin:50% 0;
+  backface-visibility:hidden;
+  top:0;left:0;
+}
+.flip-word.active{transform:translateY(0) rotateX(0);opacity:1}
+.flip-word.exit{transform:translateY(-100%) rotateX(-90deg);opacity:0}
+.flip-word.enter{transform:translateY(100%) rotateX(90deg);opacity:0}
+
+.skills-cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.skill-cat{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:24px;
+}
+.skill-cat h3{
+  font-size:13px;font-family:var(--font-mono);color:var(--neon);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;
+}
+.skill-tags{display:flex;flex-wrap:wrap;gap:8px}
+.skill-tag{
+  padding:6px 14px;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);border-radius:6px;
+  font-size:13px;color:var(--text);transition:all 0.2s;cursor:default;
+}
+.skill-tag:hover{
+  border-color:var(--neon);color:var(--neon);
+  background:rgba(0,245,255,0.06);
+}
+
+/* =========================================
+   CONTACT
+========================================= */
+.contact-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.contact-left h2{font-size:clamp(28px,4vw,48px);font-weight:900;color:var(--text);margin-bottom:16px}
+.contact-left p{font-size:16px;color:var(--muted);margin-bottom:36px;line-height:1.7}
+.contact-links{display:flex;flex-direction:column;gap:14px}
+.contact-link{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;background:var(--card);
+  border:1px solid var(--border);border-radius:12px;
+  text-decoration:none;color:var(--text);
+  transition:all 0.3s;
+}
+.contact-link:hover{border-color:var(--neon);transform:translateX(6px)}
+.contact-link-icon{font-size:20px;width:40px;text-align:center}
+.contact-link-info span{
+  display:block;font-size:12px;color:var(--muted);
+  font-family:var(--font-mono);letter-spacing:1px;margin-bottom:2px;
+}
+.contact-link-info strong{font-size:14px;color:var(--text)}
+
+.contact-cta{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:40px;text-align:center;
+}
+.contact-cta h3{font-size:22px;font-weight:800;color:var(--text);margin-bottom:12px}
+.contact-cta p{font-size:14px;color:var(--muted);margin-bottom:28px}
+.cta-btns{display:flex;flex-direction:column;gap:12px}
+.cta-btn-ig{
+  display:block;padding:14px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+  color:#fff;font-weight:700;font-size:14px;border-radius:10px;
+  text-decoration:none;transition:all 0.2s;
+}
+.cta-btn-ig:hover{opacity:0.9;transform:scale(1.02)}
+.cta-btn-tg{
+  display:block;padding:14px;background:#229ed9;
+  color:#fff;font-weight:700;font-size:14px;border-radius:10px;
+  text-decoration:none;transition:all 0.2s;
+}
+.cta-btn-tg:hover{opacity:0.9;transform:scale(1.02)}
+.cta-email{
+  font-size:12px;color:var(--muted);margin-top:16px;
+  font-family:var(--font-mono);
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:60px 24px 0;
+}
+.footer-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;
+  padding-bottom:48px;
+  border-bottom:1px solid var(--border);
+}
+.footer-brand .footer-logo{
+  font-family:var(--font-mono);font-size:24px;font-weight:700;
+  color:var(--neon);letter-spacing:2px;margin-bottom:16px;
+  text-shadow:0 0 20px rgba(0,245,255,0.4);
+}
+.footer-brand p{font-size:14px;color:var(--muted);line-height:1.7;max-width:280px}
+.footer-socials{display:flex;gap:10px;margin-top:24px}
+.footer-social{
+  width:36px;height:36px;border:1px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;text-decoration:none;color:var(--muted);
+  transition:all 0.2s;
+}
+.footer-social:hover{border-color:var(--neon);color:var(--neon)}
+
+.footer-col h4{
+  font-size:12px;font-family:var(--font-mono);color:var(--neon);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;
+}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-col ul li a{
+  font-size:14px;color:var(--muted);text-decoration:none;transition:color 0.2s;
+}
+.footer-col ul li a:hover{color:var(--neon)}
+.footer-col ul li span{font-size:14px;color:var(--muted)}
+
+.footer-status{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--muted);
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;background:#22c55e;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+.footer-bottom{
+  max-width:1200px;margin:0 auto;
+  padding:24px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-bottom-left p{font-size:13px;color:var(--muted)}
+.footer-bottom-left strong{color:var(--text)}
+.footer-bottom-right{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);font-family:var(--font-mono);
+}
+.footer-heart{color:#f43f5e}
+
+/* =========================================
+   MOBILE
+========================================= */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:40px}
+  .hero-photo-side{order:-1}
+  .photo-ring{width:220px;height:220px}
+  .photo-ring::before,.photo-ring::after{border-radius:50%}
+  .hero-label{justify-content:center}
+  .hero-bio{margin-left:auto;margin-right:auto}
+  .hero-stats{justify-content:center;gap:24px}
+  .hero-btns{justify-content:center}
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .contact-inner{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  section{padding:70px 20px}
+  .nav-links{display:none}
+  .nav-cta{display:none}
+  .hamburger{display:flex}
+  .hero-stats{gap:16px}
+  .stat-item .num{font-size:24px}
+  .footer-inner{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;text-align:center}
+  .cube-scene{width:120px;height:120px}
+  .cube,.cube-face{width:120px;height:120px}
+  .face-front{transform:translateZ(60px)}
+  .face-back{transform:rotateY(180deg) translateZ(60px)}
+  .face-left{transform:rotateY(-90deg) translateZ(60px)}
+  .face-right{transform:rotateY(90deg) translateZ(60px)}
+  .face-top{transform:rotateX(90deg) translateZ(60px)}
+  .face-bottom{transform:rotateX(-90deg) translateZ(60px)}
+}
+</style>
+</head>
+<body>
+
+<!-- ======= NAVBAR ======= -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <div class="logo">MU©</div>
+    <ul class="nav-links">
+      <li><a href="#home">Главная</a></li>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#projects">Проекты</a></li>
+      <li><a href="#skills">Навыки</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Контакты</a>
+    <button class="hamburger" id="hamburger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="closeMobileMenu()">Главная</a>
+  <a href="#about" onclick="closeMobileMenu()">Обо мне</a>
+  <a href="#projects" onclick="closeMobileMenu()">Проекты</a>
+  <a href="#skills" onclick="closeMobileMenu()">Навыки</a>
+  <a href="#contact" onclick="closeMobileMenu()">Контакты</a>
+</div>
+
+<!-- ======= HERO ======= -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="grid-lines"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+  </div>
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="hero-inner">
+    <!-- Photo -->
+    <div class="hero-photo-side">
+      <div class="photo-ring">
+        <img src="photo.jpg" alt="Маннапов Улугбек" class="photo-img" onerror="this.style.display='none';document.querySelector('.photo-placeholder').style.display='flex'">
+        <div class="photo-placeholder" style="display:none">👨‍💻</div>
+        <div class="photo-badge">⚡ Available for work</div>
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="hero-text">
+      <div class="hero-label">Frontend Developer</div>
+      <h1 class="hero-name">
+        <div class="first">Маннапов</div>
+        <div class="last">Улугбек</div>
+      </h1>
+
+      <div class="typing-wrapper">
+        <span class="typing-prefix">const role =</span>
+        <span>"</span><span id="typingText"></span><span class="cursor"></span><span>"</span>
+      </div>
+
+      <p class="hero-bio">
+        Создаю высокозащищённые веб-приложения, мобильные приложения и автоматизированные решения для вашего бизнеса. Работаю с новейшими технологиями и лучшими практиками индустрии.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="num">6+</div>
+          <div class="lbl">Лет опыта</div>
+        </div>
+        <div class="stat-item">
+          <div class="num">50+</div>
+          <div class="lbl">Проектов</div>
+        </div>
+        <div class="stat-item">
+          <div class="num">100%</div>
+          <div class="lbl">Довольных</div>
+        </div>
+      </div>
+
+      <div class="hero-btns">
+        <a href="#contact" class="btn-neon">Начать проект →</a>
+        <a href="#about" class="btn-ghost">Узнать больше</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= MARQUEE ======= -->
+<div class="marquee-section">
+  <!-- Row 1: Technologies — left -->
+  <div style="overflow:hidden">
+    <div class="marquee-track left" id="marquee1">
+      <span class="marquee-item"><span class="marquee-dot">◆</span> React</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Vue.js</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> JavaScript</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Python</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Django</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> FastAPI</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Node.js</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> PostgreSQL</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> MongoDB</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Redis</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Tailwind CSS</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Docker</span>
+      <!-- duplicate -->
+      <span class="marquee-item"><span class="marquee-dot">◆</span> React</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Vue.js</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> JavaScript</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Python</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Django</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> FastAPI</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Node.js</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> PostgreSQL</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> MongoDB</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Redis</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Tailwind CSS</span>
+      <span class="marquee-item"><span class="marquee-dot">◆</span> Docker</span>
+    </div>
+  </div>
+  <!-- Row 2: Achievements — right -->
+  <div style="overflow:hidden" class="marquee-row2">
+    <div class="marquee-track right" id="marquee2">
+      <span class="marquee-item"><span class="marquee-dot">★</span> 50+ Проектов завершено</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> 6 Лет опыта</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> 100% Довольных клиентов</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> Telegram боты</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> SaaS платформы</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> REST API интеграции</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> Clean Code</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> CI/CD</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> 50+ Проектов завершено</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> 6 Лет опыта</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> 100% Довольных клиентов</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> Telegram боты</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> SaaS платформы</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> REST API интеграции</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> Clean Code</span>
+      <span class="marquee-item"><span class="marquee-dot">★</span> CI/CD</span>
+    </div>
+  </div>
+</div>
+
+<!-- ======= 3D CUBE ======= -->
+<div class="cube-section">
+  <div class="cube-label">// tech stack</div>
+  <div class="cube-scene">
+    <div class="cube">
+      <div class="cube-face face-front">React</div>
+      <div class="cube-face face-back">Vue.js</div>
+      <div class="cube-face face-left">Python</div>
+      <div class="cube-face face-right">Django</div>
+      <div class="cube-face face-top">JavaScript</div>
+      <div class="cube-face face-bottom">Node.js</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= ABOUT ======= -->
+<section id="about">
+  <div class="container">
+    <div class="section-label">about me</div>
+    <h2 class="section-title">Мой путь в&nbsp;технологиях</h2>
+    <p class="section-sub">От первых строк кода в 2018-м до senior-разработчика с 50+ проектами</p>
+
+    <div class="about-grid" style="margin-top:48px">
+      <div class="about-card reveal">
+        <div class="card-emoji">💼</div>
+        <h3>Профессиональный путь</h3>
+        <p>Начал в 2018 году с веб-сайтов. За 6 лет прошёл от junior до senior специалиста, работал над проектами различных масштабов.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="card-emoji">🎯</div>
+        <h3>Специализация</h3>
+        <p>Полнофункциональная разработка веб-приложений, высоконагруженные системы, интеграция API и Telegram-боты для автоматизации.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="card-emoji">🚀</div>
+        <h3>Методология</h3>
+        <p>Clean code, SOLID принципы, TDD и CI/CD. Каждый проект выполняю с максимальной ответственностью и вниманием к деталям.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="card-emoji">🌟</div>
+        <h3>Результаты</h3>
+        <p>Помог более чем 50 компаниям масштабировать бизнес через цифровые решения. 100% положительных отзывов от клиентов.</p>
+      </div>
+    </div>
+
+    <div class="timeline" style="margin-top:64px">
+      <h3 style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:40px;margin-left:-40px">Хронология роста</h3>
+      <div class="tl-item reveal">
+        <div class="tl-year">2018</div>
+        <h4>Начало карьеры</h4>
+        <p>Первые веб-сайты на HTML, CSS, JavaScript</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2019</div>
+        <h4>Первые проекты</h4>
+        <p>Разработка веб-приложений, изучение бэкенда</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2020</div>
+        <h4>Специализация</h4>
+        <p>Python, Django, Telegram API</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-year">2021–2024</div>
+        <h4>Senior разработчик</h4>
+        <p>Крупные проекты, лидерство в командах, SaaS</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= PROJECTS ======= -->
+<section id="projects" style="background:var(--bg2);border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="section-label">projects</div>
+    <h2 class="section-title">Лучшие проекты</h2>
+    <p class="section-sub">Работы, которыми я горжусь</p>
+
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="proj-icon">🎵</div>
+        <div class="proj-title">MusicHub — Музыкальный стриминг</div>
+        <p class="proj-desc">Полнофункциональная платформа для потокового воспроизведения музыки с рекомендательной системой на базе AI/ML.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">WebSocket</span>
+        </div>
+        <ul class="proj-features">
+          <li>Real-time синхронизация плейлистов</li>
+          <li>Рекомендательная система с ML</li>
+          <li>Поддержка 1M+ активных пользователей</li>
+          <li>Высокая оптимизация по скорости</li>
+        </ul>
+        <div class="proj-result">
+          <h4>// Результаты</h4>
+          <p>📈 DAU вырос на 350%</p>
+          <p>⭐ Рейтинг 4.8/5 в AppStore</p>
+          <p>💰 Рост выручки 420%</p>
+          <p class="proj-quote">"Проект превзошёл все ожидания." — CEO MusicHub</p>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="proj-icon">🤖</div>
+        <div class="proj-title">TeleOrder — Telegram E-commerce Bot</div>
+        <p class="proj-desc">Интеллектуальный Telegram-бот для автоматизации продаж с интеграцией платёжных систем и AI-чатботом.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">aiogram</span>
+          <span class="tech-tag">PostgreSQL</span>
+          <span class="tech-tag">Stripe API</span>
+        </div>
+        <ul class="proj-features">
+          <li>Полная интеграция платёжных систем</li>
+          <li>AI-чатбот для ответов на вопросы</li>
+          <li>Управление заказами в реальном времени</li>
+          <li>Аналитика и отчётность</li>
+        </ul>
+        <div class="proj-result">
+          <h4>// Результаты</h4>
+          <p>📱 50K+ пользователей за 3 месяца</p>
+          <p>💵 Автоматизация 80% операций</p>
+          <p>📊 ROI 600% в первый год</p>
+          <p class="proj-quote">"Продажи выросли в 5 раз." — Владелец TeleOrder</p>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="proj-icon">📊</div>
+        <div class="proj-title">AnalyticsPro — SaaS платформа</div>
+        <p class="proj-desc">Облачная платформа для аналитики и визуализации данных с мультитенантностью и горизонтальным масштабированием.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">Vue.js</span>
+          <span class="tech-tag">Django</span>
+          <span class="tech-tag">PostgreSQL</span>
+          <span class="tech-tag">Redis</span>
+        </div>
+        <ul class="proj-features">
+          <li>Интерактивные дашборды и отчёты</li>
+          <li>Real-time обработка больших данных</li>
+          <li>Интеграция с 20+ источниками данных</li>
+          <li>Автоматизация и планирование отчётов</li>
+        </ul>
+        <div class="proj-result">
+          <h4>// Результаты</h4>
+          <p>🏢 200+ компаний-клиентов</p>
+          <p>💼 Enterprise контракты $2М+</p>
+          <p>⚡ 99.99% uptime</p>
+          <p class="proj-quote">"Лучшее решение для аналитики!" — CTO GlobalCorp</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= SKILLS ======= -->
+<section id="skills" class="skills-section">
+  <div class="container">
+    <div class="section-label">skills</div>
+
+    <!-- 3D flip words -->
+    <div class="flip-wrapper">
+      <span class="flip-prefix">Я работаю с</span>
+      <div class="flip-box">
+        <div class="flip-word active" id="fw0">React</div>
+        <div class="flip-word enter" id="fw1">Python</div>
+        <div class="flip-word enter" id="fw2">Django</div>
+        <div class="flip-word enter" id="fw3">Vue.js</div>
+        <div class="flip-word enter" id="fw4">Node.js</div>
+        <div class="flip-word enter" id="fw5">FastAPI</div>
+      </div>
+    </div>
+
+    <div class="skills-cats">
+      <div class="skill-cat reveal">
+        <h3>Фронтенд</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Vue.js</span>
+          <span class="skill-tag">Tailwind CSS</span>
+        </div>
+      </div>
+      <div class="skill-cat reveal">
+        <h3>Бэкенд</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Django</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Express</span>
+          <span class="skill-tag">REST API</span>
+        </div>
+      </div>
+      <div class="skill-cat reveal">
+        <h3>Базы данных</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">MySQL</span>
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">Redis</span>
+          <span class="skill-tag">Firebase</span>
+        </div>
+      </div>
+      <div class="skill-cat reveal">
+        <h3>Боты и API</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Telegram Bot API</span>
+          <span class="skill-tag">aiogram</span>
+          <span class="skill-tag">Webhooks</span>
+          <span class="skill-tag">OAuth 2.0</span>
+          <span class="skill-tag">GraphQL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= CONTACT ======= -->
+<section id="contact" style="border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <div class="section-label">contact</div>
+        <h2>Давайте создадим что-то&nbsp;невероятное</h2>
+        <p>Готов обсудить ваш проект и воплотить его в жизнь. Пишите удобным способом — отвечаю быстро.</p>
+        <div class="contact-links">
+          <a href="https://www.instagram.com/mannapov_ulugbek/" target="_blank" class="contact-link">
+            <div class="contact-link-icon">📸</div>
+            <div class="contact-link-info">
+              <span>Instagram</span>
+              <strong>@mannapov_ulugbek</strong>
+            </div>
+          </a>
+          <a href="https://t.me/VVebstyle" target="_blank" class="contact-link">
+            <div class="contact-link-icon">💬</div>
+            <div class="contact-link-info">
+              <span>Telegram</span>
+              <strong>@VVebstyle</strong>
+            </div>
+          </a>
+          <a href="mailto:mannapovulugbek4@gmail.com" class="contact-link">
+            <div class="contact-link-icon">📧</div>
+            <div class="contact-link-info">
+              <span>Email</span>
+              <strong>mannapovulugbek4@gmail.com</strong>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="contact-cta">
+        <h3>Готов к работе прямо сейчас</h3>
+        <p>Выберите удобный способ связи и расскажите о вашем проекте</p>
+        <div class="cta-btns">
+          <a href="https://www.instagram.com/mannapov_ulugbek/" target="_blank" class="cta-btn-ig">📸 Написать в Instagram</a>
+          <a href="https://t.me/VVebstyle" target="_blank" class="cta-btn-tg">💬 Написать в Telegram</a>
+        </div>
+        <p class="cta-email">или mannapovulugbek4@gmail.com</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= FOOTER ======= -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">MU©</div>
+      <p>Профессиональный разработчик веб-приложений. Создаю цифровые решения для вашего бизнеса с 2018 года.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/mannapov_ulugbek/" target="_blank" class="footer-social" title="Instagram">📸</a>
+        <a href="https://t.me/VVebstyle" target="_blank" class="footer-social" title="Telegram">💬</a>
+        <a href="mailto:mannapovulugbek4@gmail.com" class="footer-social" title="Email">📧</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Навигация</h4>
+      <ul>
+        <li><a href="#home">Главная</a></li>
+        <li><a href="#about">Обо мне</a></li>
+        <li><a href="#projects">Проекты</a></li>
+        <li><a href="#skills">Навыки</a></li>
+        <li><a href="#contact">Контакты</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Технологии</h4>
+      <ul>
+        <li><span>React / Vue.js</span></li>
+        <li><span>Python / Django</span></li>
+        <li><span>Node.js / Express</span></li>
+        <li><span>PostgreSQL / Redis</span></li>
+        <li><span>Telegram API</span></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Статус</h4>
+      <ul>
+        <li>
+          <div class="footer-status">
+            <span class="status-dot"></span>
+            Доступен для проектов
+          </div>
+        </li>
+        <li><span style="font-size:13px;color:var(--muted)">Ответ в течение 24ч</span></li>
+        <li><span style="font-size:13px;color:var(--muted)">Ташкент, Узбекистан</span></li>
+        <li><a href="#contact">Связаться →</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      <p>© 2024 <strong>Маннапов Улугбек</strong>. Все права защищены.</p>
+      <p style="margin-top:4px">Made with <span class="footer-heart">♥</span> in Uzbekistan</p>
+    </div>
+    <div class="footer-bottom-right">
+      <span>MU©</span>
+      <span style="color:var(--border)">|</span>
+      <span>Frontend Developer</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ======= SCRIPTS ======= -->
+<script>
+/* ---- Navbar scroll ---- */
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>40)
+})
+
+/* ---- Hamburger ---- */
+const ham=document.getElementById('hamburger')
+const mob=document.getElementById('mobileMenu')
+ham.addEventListener('click',()=>{
+  ham.classList.toggle('open')
+  mob.classList.toggle('open')
+})
+function closeMobileMenu(){ham.classList.remove('open');mob.classList.remove('open')}
+
+/* ---- Typing effect ---- */
+const words=['React Developer','Vue.js Developer','Frontend Developer','Python Backend','Django Expert','Fullstack Dev']
+let wi=0,ci=0,deleting=false
+const el=document.getElementById('typingText')
+function type(){
+  const w=words[wi]
+  el.textContent=deleting?w.slice(0,ci--):w.slice(0,ci++)
+  if(!deleting&&ci>w.length){setTimeout(()=>deleting=true,1800);return}
+  if(deleting&&ci<0){deleting=false;wi=(wi+1)%words.length}
+  setTimeout(type,deleting?60:100)
+}
+type()
+
+/* ---- Particles ---- */
+const canvas=document.getElementById('particleCanvas')
+const ctx=canvas.getContext('2d')
+let particles=[]
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize()
+window.addEventListener('resize',resize)
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*window.innerWidth,
+    y:window.innerHeight+Math.random()*200,
+    vy:-0.4-Math.random()*0.8,
+    vx:(Math.random()-0.5)*0.3,
+    size:Math.random()*2+0.5,
+    alpha:Math.random()*0.4+0.1,
+    color:Math.random()>0.5?'0,245,255':'124,58,237'
+  })
+}
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height)
+  particles.forEach(p=>{
+    p.y+=p.vy;p.x+=p.vx;p.alpha-=0.001
+    if(p.y<-10||p.alpha<=0){
+      p.y=canvas.height+10
+      p.x=Math.random()*canvas.width
+      p.alpha=Math.random()*0.4+0.1
+    }
+    ctx.beginPath()
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2)
+    ctx.fillStyle=`rgba(${p.color},${p.alpha})`
+    ctx.fill()
+  })
+  requestAnimationFrame(drawParticles)
+}
+drawParticles()
+
+/* ---- Scroll reveal ---- */
+const revealEls=document.querySelectorAll('.reveal')
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}})
+},{threshold:0.15})
+revealEls.forEach(el=>io.observe(el))
+
+/* ---- 3D Flip words ---- */
+const fwords=document.querySelectorAll('.flip-word')
+let fw=0
+setInterval(()=>{
+  fwords[fw].classList.remove('active')
+  fwords[fw].classList.add('exit')
+  setTimeout(()=>{fwords[fw].classList.remove('exit');fwords[fw].classList.add('enter')},500)
+  fw=(fw+1)%fwords.length
+  fwords[fw].classList.remove('enter')
+  fwords[fw].classList.add('active')
+},2500)
+</script>
+</body>
+</html>
